@@ -1,6 +1,6 @@
 
 using AutoMapper;
-using API.DTOs;
+using Domain.DTOs;
 using Domain.Entities;
 
 namespace Infrastructure.Mapper;
