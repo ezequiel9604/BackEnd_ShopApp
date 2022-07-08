@@ -45,6 +45,20 @@ public class RepositoryComment : IRepositoryComment
         }
     }
 
+    public async Task<List<Comment>> GetByItemId(string id)
+    {
+        try
+        {
+            var comments = await _dbContext.Comments.Where(x => x.ItemId == id).ToListAsync();
+
+            return comments;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
     public async void Create(Comment obj)
     {
         try

@@ -8,6 +8,8 @@ using Domain.Interfaces.Services;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Infrastructure.Data;
+using Infrastructure.Mapper;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,18 +39,29 @@ builder.Services.AddScoped<IRepositoryClient, RepositoryClient>();
 builder.Services.AddScoped<IRepositoryItem, RepositoryItem>();
 builder.Services.AddScoped<IRepositoryOrder, RepositoryOrder>();
 builder.Services.AddScoped<IRepositoryComment, RepositoryComment>();
+builder.Services.AddScoped<IRepositoryCategory, RepositoryCategory>();
+builder.Services.AddScoped<IRepositoryBrand, RepositoryBrand>();
+builder.Services.AddScoped<IRepositoryImage, RepositoryImage>();
+builder.Services.AddScoped<IRepositorySubitem, RepositorySubitem>();
 
 builder.Services.AddScoped<IServiceClient, ServiceClient>();
 builder.Services.AddScoped<IServiceItem, ServiceItem>();
 builder.Services.AddScoped<IServiceOrder, ServiceOrder>();
 builder.Services.AddScoped<IServiceComment, ServiceComment>();
 
-builder.Services.AddAutoMapper(typeof(Program));
+//builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddCors(c => c.AddPolicy("corsapp", builder =>
 {
     builder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
 }));
+
+var mapperConfig = new MapperConfiguration(cfg =>
+{
+    cfg.AddProfile(new AutoMappersProfile());
+});
+
+builder.Services.AddSingleton(mapperConfig.CreateMapper());
 
 var app = builder.Build();
 
@@ -59,10 +72,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
 app.UseCors("corsapp");
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

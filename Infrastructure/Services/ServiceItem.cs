@@ -13,13 +13,28 @@ public class ServiceItem : IServiceItem
 
     private readonly IMapper _mapper;
     private readonly IRepositoryItem _repoItem;
+    private readonly IRepositoryCategory _repoCategory;
+    private readonly IRepositoryBrand _repoBrand;
+    private readonly IRepositoryImage _repoImage;
+    private readonly IRepositorySubitem _repoSubitem;
+    private readonly IRepositoryComment _repoComment;
 
     public ServiceItem(
         IMapper mapper, 
-        IRepositoryItem repoItem)
+        IRepositoryItem repoItem,
+        IRepositoryCategory repoCategory,
+        IRepositoryBrand repoBrand,
+        IRepositoryImage repoImage,
+        IRepositorySubitem repoSubitem,
+        IRepositoryComment repoComment)
     {
         _mapper = mapper;
         _repoItem = repoItem;
+        _repoBrand = repoBrand;
+        _repoCategory = repoCategory;
+        _repoImage = repoImage;
+        _repoSubitem = repoSubitem;
+        _repoComment = repoComment;
     }
 
     public async Task<List<ItemDTO>> GetAll()
@@ -36,9 +51,21 @@ public class ServiceItem : IServiceItem
             foreach (var itm in items)
             {
                 var itemdto = _mapper.Map<ItemDTO>(itm);
-                itemdto.ImageDTOs = _mapper.Map<List<ImageDTO>>(itm.Images).ToArray();
-                itemdto.SubItemDTOs = _mapper.Map<List<SubItemDTO>>(itm.SubItems).ToArray();
-                itemdto.CommentDTOs = _mapper.Map<List<CommentDTO>>(itm.Comments).ToArray();
+
+                var cate = await _repoCategory.GetById(itm.CategoryId);
+                var bra = await _repoBrand.GetById(itm.BrandId);
+
+                itemdto.Category = cate.Name;
+                itemdto.Brand = bra.Name;
+
+                var imgs = await _repoImage.GetByItemId(itm.Id);
+                itemdto.Images = _mapper.Map<List<ImageDTO>>(imgs);
+
+                var subs = await _repoSubitem.GetByItemId(itm.Id);
+                itemdto.SubItems = _mapper.Map<List<SubItemDTO>>(subs);
+
+                var comms = await _repoComment.GetByItemId(itm.Id);
+                itemdto.Comments = _mapper.Map<List<CommentDTO>>(comms);
 
                 itemDtos.Add(itemdto);
             }
@@ -47,7 +74,8 @@ public class ServiceItem : IServiceItem
         }
         catch (Exception e)
         {
-            System.Console.WriteLine("/******** "+e.StackTrace+" *******/");
+            //System.Console.WriteLine("/******** "+e.StackTrace+" *******/");
+            //System.Console.WriteLine("/******** " + e.Message + " *******/");
 
             return new List<ItemDTO>();
         }
@@ -60,7 +88,7 @@ public class ServiceItem : IServiceItem
         if (string.IsNullOrEmpty(itemdto.Title) || string.IsNullOrEmpty(itemdto.Description) ||
             string.IsNullOrEmpty(itemdto.Brand) || string.IsNullOrEmpty(itemdto.State) ||
             string.IsNullOrEmpty(itemdto.Category) || itemdto.Quality < 0 || itemdto.Quality > 5 ||
-            itemdto.ImageDTOs.IsNullOrEmpty() || itemdto.SubItemDTOs.IsNullOrEmpty())
+            itemdto.Images.IsNullOrEmpty() || itemdto.SubItems.IsNullOrEmpty())
         {
             return "No empty allow!";
         }
@@ -77,15 +105,15 @@ public class ServiceItem : IServiceItem
                 randomId = "ITM-" + new Random().Next(1000, 9999);
             }
 
-            //var cat = _repositoryCategory.GetByName(itemdto.Category);
-            //var bra = _repositoryBrand.GetByName(itemdto.Brand);
+            var cate = await _repoCategory.GetByName(itemdto.Category);
+            var bra = await _repoBrand.GetByName(itemdto.Brand);
 
             var item = _mapper.Map<Item>(itemdto);
             item.Id = randomId;
-            item.Images = _mapper.Map<List<Image>>(itemdto.ImageDTOs);
-            item.SubItems = _mapper.Map<List<SubItem>>(itemdto.SubItemDTOs);
-            //item.CategoryId = cat.Id;
-            //item.BrandId = bra.Id;
+            item.Images = _mapper.Map<List<Image>>(itemdto.Images);
+            item.SubItems = _mapper.Map<List<SubItem>>(itemdto.SubItems);
+            item.Category = cate;
+            item.Brand = bra;
 
             _repoItem.Create(item);
 
@@ -104,7 +132,6 @@ public class ServiceItem : IServiceItem
         }
 
     }
-
 
     public async Task<string> Update(ItemDTO itemdto)
     {
@@ -128,16 +155,16 @@ public class ServiceItem : IServiceItem
                 item.State = itemdto.State;
 
             if (!string.IsNullOrEmpty(itemdto.Category))
-                //item.CategoryId = _repositoryCategory.GetByName(itemdto.Category).Id;
+                item.Category = await _repoCategory.GetByName(itemdto.Category);
 
             if (!string.IsNullOrEmpty(itemdto.Brand))
-                //item.BrandId = _repositoryBrand.GetByName(itemdto.Brand).Id;
+                item.Brand = await _repoBrand.GetByName(itemdto.Brand);
 
-            if (!itemdto.ImageDTOs.IsNullOrEmpty())
-                item.Images = _mapper.Map<List<Image>>(itemdto.ImageDTOs);
+            if (!itemdto.Images.IsNullOrEmpty())
+                item.Images = _mapper.Map<List<Image>>(itemdto.Images);
 
-            if (!itemdto.SubItemDTOs.IsNullOrEmpty())
-                item.SubItems = _mapper.Map<List<SubItem>>(itemdto.SubItemDTOs);
+            if (!itemdto.SubItems.IsNullOrEmpty())
+                item.SubItems = _mapper.Map<List<SubItem>>(itemdto.SubItems);
 
             _repoItem.Update(item);
 

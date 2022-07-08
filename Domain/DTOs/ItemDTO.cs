@@ -17,10 +17,10 @@ public class ItemDTO
     
     public double Quality { get; set; }
 
-    public ImageDTO[]? ImageDTOs { get; set; }
+    public List<ImageDTO>? Images { get; set; }
 
-    public SubItemDTO[]? SubItemDTOs { get; set; }
+    public List<SubItemDTO>? SubItems { get; set; }
     
-    public CommentDTO[]? CommentDTOs { get; set; }
+    public List<CommentDTO>? Comments { get; set; }
 
 }
