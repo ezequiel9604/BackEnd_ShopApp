@@ -123,7 +123,7 @@ public class ClientController : ControllerBase
     [HttpPost("Signout")]
     public async Task<IActionResult> Signout(ClientDTO req)
     {
-        var result = await _servClient.Delete(req.Email);
+        var result = await _servClient.Delete(req.Email, req.Password);
 
         if (result == "No empty allow!")
             return BadRequest("Error: There are empty values, No empty values allow!");

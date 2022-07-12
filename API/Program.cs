@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Infrastructure.Repositories;
@@ -39,10 +40,18 @@ builder.Services.AddScoped<IRepositoryClient, RepositoryClient>();
 builder.Services.AddScoped<IRepositoryItem, RepositoryItem>();
 builder.Services.AddScoped<IRepositoryOrder, RepositoryOrder>();
 builder.Services.AddScoped<IRepositoryComment, RepositoryComment>();
-builder.Services.AddScoped<IRepositoryCategory, RepositoryCategory>();
-builder.Services.AddScoped<IRepositoryBrand, RepositoryBrand>();
 builder.Services.AddScoped<IRepositoryImage, RepositoryImage>();
 builder.Services.AddScoped<IRepositorySubitem, RepositorySubitem>();
+builder.Services.AddScoped<IRepositoryPhone, RepositoryPhone>();
+builder.Services.AddScoped<IRepositoryAddress, RepositoryAddress>();
+
+builder.Services.AddScoped<IRepositoryWeakDomain<Category>, RepositoryCategory>();
+builder.Services.AddScoped<IRepositoryWeakDomain<Brand>, RepositoryBrand>();
+builder.Services.AddScoped<IRepositoryWeakDomain<State>, RepositoryState>();
+builder.Services.AddScoped<IRepositoryWeakDomain<Currancy>, RepositoryCurrancy>();
+builder.Services.AddScoped<IRepositoryWeakDomain<Language>, RepositoryLanguage>();
+builder.Services.AddScoped<IRepositoryWeakDomain<Appearance>, RepositoryAppearance>();
+builder.Services.AddScoped<IRepositoryWeakDomain<ClientType>, RepositoryClientType>();
 
 builder.Services.AddScoped<IServiceClient, ServiceClient>();
 builder.Services.AddScoped<IServiceItem, ServiceItem>();

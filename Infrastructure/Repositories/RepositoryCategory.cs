@@ -6,13 +6,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class RepositoryCategory : IRepositoryCategory
+public class RepositoryCategory : IRepositoryWeakDomain<Category>
 {
     private readonly DatabaseContext _dbContext;
 
     public RepositoryCategory(DatabaseContext dbContext)
     {
         _dbContext = dbContext;
+    }
+
+    public async Task<List<Category>> GetAll()
+    {
+        try
+        {
+            return await _dbContext.Categories.ToListAsync();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
     public async Task<Category> GetByName(string name)
@@ -40,29 +52,5 @@ public class RepositoryCategory : IRepositoryCategory
         }
     }
 
-    void IRepository<Category>.Create(Category obj)
-    {
-        throw new NotImplementedException();
-    }
-
-    void IRepository<Category>.Delete(Category obj)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<List<Category>> IRepository<Category>.GetAll()
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<int> IRepository<Category>.SaveAllChanges()
-    {
-        throw new NotImplementedException();
-    }
-
-    void IRepository<Category>.Update(Category obj)
-    {
-        throw new NotImplementedException();
-    }
 }
 

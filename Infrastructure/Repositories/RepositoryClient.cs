@@ -42,7 +42,7 @@ public class RepositoryClient : IRepositoryClient
     {
         try
         {
-            return await _dbContext.Clients.FindAsync(email);
+            return await _dbContext.Clients.Where(x => x.Email == email).FirstOrDefaultAsync();
         }
         catch (Exception)
         {

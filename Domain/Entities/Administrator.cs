@@ -32,7 +32,7 @@ public class Administrator
     [StringLength(80)]
     public string ImagePath { get; set; } = string.Empty;
 
-    [Required]
+
     [StringLength(10)]
     public string PhoneNumber { get; set; } = string.Empty;
     

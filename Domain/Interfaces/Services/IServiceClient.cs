@@ -11,4 +11,6 @@ public interface IServiceClient : IService<ClientDTO>
 
     Task<string> Logout(string email);
 
+    Task<string> Delete(string email, string password);
+
 }

@@ -1,7 +1,7 @@
 
 namespace Domain.Interfaces.Repositories;
 
-public interface IRepository<T>
+public interface IRepositoryStrongDomain<T>
 {
     Task<List<T>> GetAll();
 

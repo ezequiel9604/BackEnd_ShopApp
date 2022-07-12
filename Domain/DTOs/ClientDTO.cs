@@ -30,12 +30,15 @@ public class ClientDTO
     public string Appearance { get; set; } = string.Empty;
 
     public string Currancy { get; set; } = string.Empty;
+
     public string Language { get; set; } = string.Empty;
 
-    public AddressDTO[]? AddressDTOs { get; set; }
+    public List<AddressDTO>? Addresss { get; set; }
 
-    public PhoneDTO[]? PhoneDTOs { get; set; }
+    public List<PhoneDTO>? Phones { get; set; }
 
-    public CommentDTO[]? CommentDTOs { get; set; }
+    public List<CommentDTO>? Comments { get; set; }
+
+    // still several lists to add like: shoppingCartList, wishList, etc.
 
 }

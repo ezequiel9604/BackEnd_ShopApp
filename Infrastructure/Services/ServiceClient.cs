@@ -16,15 +16,40 @@ public class ServiceClient : IServiceClient
     private readonly IMapper _mapper;
     private readonly IConfiguration _config;
     private readonly IRepositoryClient _repClient;
+    private readonly IRepositoryComment _repComment;
+    private readonly IRepositoryAddress _repAddress;
+    private readonly IRepositoryPhone _repPhone;
+
+    private readonly IRepositoryWeakDomain<State> _repWeakStatus;
+    private readonly IRepositoryWeakDomain<Currancy> _repWeakCurrancy;
+    private readonly IRepositoryWeakDomain<Appearance> _repWeakAppearance;
+    private readonly IRepositoryWeakDomain<Language> _repWeakLanguage;
+    private readonly IRepositoryWeakDomain<ClientType> _repWeakClientType;
 
     public ServiceClient(
         IMapper mapper, 
         IConfiguration config, 
-        IRepositoryClient repClient)
+        IRepositoryClient repClient,
+        IRepositoryComment repComment,
+        IRepositoryAddress repAddress,
+        IRepositoryPhone repPhone,
+        IRepositoryWeakDomain<State> repWeakStatus,
+        IRepositoryWeakDomain<Currancy> repWeakCurrancy,
+        IRepositoryWeakDomain<Appearance> repWeakAppearance,
+        IRepositoryWeakDomain<Language> repWeakLanguage,
+        IRepositoryWeakDomain<ClientType> repWeakClientType)
     {
         _mapper = mapper;
         _config = config;
         _repClient = repClient;
+        _repComment = repComment;
+        _repAddress = repAddress;
+        _repPhone = repPhone;
+        _repWeakStatus = repWeakStatus;
+        _repWeakCurrancy = repWeakCurrancy;
+        _repWeakLanguage = repWeakLanguage;
+        _repWeakAppearance = repWeakAppearance;
+        _repWeakClientType = repWeakClientType;
     }
 
     public async Task<List<ClientDTO>> GetAll()
@@ -41,8 +66,30 @@ public class ServiceClient : IServiceClient
             foreach (var cli in clients)
             {
                 var cdto = _mapper.Map<ClientDTO>(cli);
-                cdto.AddressDTOs = _mapper.Map<List<AddressDTO>>(cli.Addresses).ToArray();
-                cdto.PhoneDTOs = _mapper.Map<List<PhoneDTO>>(cli.Phones).ToArray();
+
+                var state = await _repWeakStatus.GetById(cli.StateId);
+                cdto.State = state.Name;
+
+                var curr = await _repWeakCurrancy.GetById(cli.CurrancyId);
+                cdto.Currancy = state.Name;
+
+                var appea = await _repWeakAppearance.GetById(cli.AppearanceId);
+                cdto.Appearance = appea.Name;
+
+                var lang = await _repWeakLanguage.GetById(cli.LanguageId);
+                cdto.Language = lang.Name;
+
+                var type = await _repWeakClientType.GetById(cli.ClientTypeId);
+                cdto.Type = type.Name;
+
+                var addrs = await _repAddress.GetByClientId(cli.Id);
+                cdto.Addresss = _mapper.Map<List<AddressDTO>>(addrs);
+
+                var phos = await _repPhone.GetByClientId(cli.Id);
+                cdto.Phones = _mapper.Map<List<PhoneDTO>>(phos);
+
+                var comms = await _repComment.GetByClientId(cli.Id);
+                cdto.Comments = _mapper.Map<List<CommentDTO>>(comms);
 
                 clientDtos.Add(cdto);
             }
@@ -56,7 +103,6 @@ public class ServiceClient : IServiceClient
         }
 
     }
-
 
     public async Task<string> Create(ClientDTO clientdto)
     {
@@ -94,17 +140,17 @@ public class ServiceClient : IServiceClient
             client.PasswordHash = hash;
             client.PasswordSalt = salt;
 
-            if (!clientdto.AddressDTOs.IsNullOrEmpty())
-                client.Addresses = _mapper.Map<List<Address>>(clientdto.AddressDTOs);
+            if (!clientdto.Addresss.IsNullOrEmpty())
+                client.Addresses = _mapper.Map<List<Address>>(clientdto.Addresss);
 
-            if (!clientdto.PhoneDTOs.IsNullOrEmpty())
-                client.Phones = _mapper.Map<List<Phone>>(clientdto.PhoneDTOs);
+            if (!clientdto.Phones.IsNullOrEmpty())
+                client.Phones = _mapper.Map<List<Phone>>(clientdto.Phones);
 
             client.ClientTypeId = (clientdto.Type == "normal") ? 1 : (clientdto.Type == "express") ? 2 : 1;
-            client.AppearanceId = 1;
-            client.LanguageId = 1;
-            client.CurrancyId = 1;
-            client.StateId = 2;
+            client.AppearanceId = 1; // light
+            client.LanguageId = 1; // english
+            client.CurrancyId = 1; // dollars
+            client.StateId = 3; // offline
 
             _repClient.Create(client);
 
@@ -116,8 +162,9 @@ public class ServiceClient : IServiceClient
             return "No action!";
 
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            System.Console.WriteLine(e.Message);
             return "Database error!";
         }
 
@@ -157,11 +204,11 @@ public class ServiceClient : IServiceClient
                 client.PasswordSalt = salt;
             }
 
-            if (clientdto.AddressDTOs.IsNullOrEmpty())
-                client.Addresses = _mapper.Map<List<Address>>(clientdto.AddressDTOs);
+            if (clientdto.Addresss.IsNullOrEmpty())
+                client.Addresses = _mapper.Map<List<Address>>(clientdto.Addresss);
 
-            if (clientdto.PhoneDTOs.IsNullOrEmpty())
-                client.Phones = _mapper.Map<List<Phone>>(clientdto.PhoneDTOs);
+            if (clientdto.Phones.IsNullOrEmpty())
+                client.Phones = _mapper.Map<List<Phone>>(clientdto.Phones);
 
             if (clientdto.YearOfBirth != 0 && clientdto.MonthOfBirth != 0 && clientdto.MonthOfBirth != 0)
                 client.DateOfBirth = new DateTime(clientdto.YearOfBirth, clientdto.MonthOfBirth, clientdto.DayOfBirth);
@@ -198,10 +245,10 @@ public class ServiceClient : IServiceClient
     }
 
 
-    public async Task<string> Delete(string email)
+    public async Task<string> Delete(string email, string password)
     {
 
-        if (string.IsNullOrEmpty(email))
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             return "No empty allow!";
 
         try
@@ -210,6 +257,12 @@ public class ServiceClient : IServiceClient
 
             if (client is null)
                 return "No exist!";
+
+            var passCorrect = Passwords.VerifyPassword(password, client.PasswordHash, client.PasswordSalt);
+
+            if (!passCorrect)
+                return "No exist";
+
 
             _repClient.Delete(client);
 
@@ -257,8 +310,8 @@ public class ServiceClient : IServiceClient
             var token = Tokens.CreateToken(client, _config);
 
             var cdto = _mapper.Map<ClientDTO>(client);
-            cdto.AddressDTOs = _mapper.Map<List<AddressDTO>>(client.Addresses).ToArray();
-            cdto.PhoneDTOs = _mapper.Map<List<PhoneDTO>>(client.Phones).ToArray();
+            cdto.Addresss = _mapper.Map<List<AddressDTO>>(client.Addresses);
+            cdto.Phones = _mapper.Map<List<PhoneDTO>>(client.Phones);
 
             return new { Token = token, User = cdto };
 
@@ -305,11 +358,12 @@ public class ServiceClient : IServiceClient
             client.PasswordSalt = salt;
             client.ImagePath = string.IsNullOrEmpty(clientdto.ImagePath) ?
                                 "placeholder-man.png" : clientdto.ImagePath;
-            client.AppearanceId = 1;
-            client.LanguageId = 1;
-            client.CurrancyId = 1;
-            client.StateId = 2;
-            client.ClientTypeId = 1;
+
+            client.ClientTypeId = 1; // normal
+            client.AppearanceId = 1; // light
+            client.LanguageId = 1; // english
+            client.CurrancyId = 1; // dollars
+            client.StateId = 3; // offline
 
             _repClient.Create(client);
 
@@ -342,7 +396,7 @@ public class ServiceClient : IServiceClient
                 return "No exist!";
 
 
-            client.StateId = 2;
+            client.StateId = 3;
 
             _repClient.Update(client);
 
@@ -361,5 +415,8 @@ public class ServiceClient : IServiceClient
 
     }
 
-  
+    Task<string> IService<ClientDTO>.Delete(string obj)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -3,7 +3,7 @@ using Domain.Entities;
 
 namespace Domain.Interfaces.Repositories;
 
-public interface IRepositoryClient : IRepository<Client>
+public interface IRepositoryClient : IRepositoryStrongDomain<Client>
 {
 
     Task<Client> GetById(string id);

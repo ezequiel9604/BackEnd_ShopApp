@@ -1,25 +1,26 @@
 ﻿
 using Domain.Entities;
-using Infrastructure.Data;
 using Domain.Interfaces.Repositories;
+using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class RepositoryBrand : IRepositoryWeakDomain<Brand>
+public class RepositoryAppearance : IRepositoryWeakDomain<Appearance>
 {
+
     private readonly DatabaseContext _dbContext;
 
-    public RepositoryBrand(DatabaseContext dbContext)
+    public RepositoryAppearance(DatabaseContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public async Task<List<Brand>> GetAll()
+    public async Task<List<Appearance>> GetAll()
     {
         try
         {
-            return await _dbContext.Brands.ToListAsync();
+            return await _dbContext.Appearances.ToListAsync();
         }
         catch (Exception)
         {
@@ -27,24 +28,11 @@ public class RepositoryBrand : IRepositoryWeakDomain<Brand>
         }
     }
 
-    public async Task<Brand> GetByName(string name)
+    public async Task<Appearance> GetById(int id)
     {
         try
         {
-            return await _dbContext.Brands.Where(x => x.Name == name).FirstOrDefaultAsync();
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-
-    }
-
-    public async Task<Brand> GetById(int id)
-    {
-        try
-        {
-            return await _dbContext.Brands.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return await _dbContext.Appearances.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
         catch (Exception)
         {
@@ -52,5 +40,16 @@ public class RepositoryBrand : IRepositoryWeakDomain<Brand>
         }
     }
 
+    public async Task<Appearance> GetByName(string name)
+    {
+        try
+        {
+            return await _dbContext.Appearances.Where(x => x.Name == name).FirstOrDefaultAsync();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
 }
 

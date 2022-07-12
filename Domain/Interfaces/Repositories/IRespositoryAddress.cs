@@ -3,7 +3,7 @@ using Domain.Entities;
 
 namespace Domain.Interfaces.Repositories;
 
-public interface IRepositoryAddress : IRepository<Address>
+public interface IRepositoryAddress : IRepositoryStrongDomain<Address>
 {
     Task<Address> GetById(int id);
 

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220705150718_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20220712161825_CreatingAndInitializingDatabase")]
+    partial class CreatingAndInitializingDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -103,11 +103,13 @@ namespace Infrastructure.Migrations
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Administrators");
                 });
@@ -128,6 +130,18 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Appearances");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "light"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "dark"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Brand", b =>
@@ -146,6 +160,18 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Brands");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "samsung"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "panasonic"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Category", b =>
@@ -164,6 +190,28 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "clothing"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "office"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "technology"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "home"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Chat", b =>
@@ -296,6 +344,18 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Types");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "normal"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "express"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Comment", b =>
@@ -350,6 +410,18 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Currancies");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "usa / dollars"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "dom / pesos"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Image", b =>
@@ -431,6 +503,18 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Languages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "english"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "spanish"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
@@ -450,9 +534,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("Note")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(2147483647)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
@@ -589,6 +672,28 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("States");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "connected"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "suspended"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "offline"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "retired"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Status", b =>

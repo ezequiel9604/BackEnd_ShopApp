@@ -25,8 +25,7 @@ public class Order
     [Required]
     public double Descount { get; set; }
 
-    [Required]
-    [StringLength(100)]
+    [StringLength(int.MaxValue)]
     public string Note { get; set; } = string.Empty;
 
     [Required]

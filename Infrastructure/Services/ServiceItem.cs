@@ -13,8 +13,8 @@ public class ServiceItem : IServiceItem
 
     private readonly IMapper _mapper;
     private readonly IRepositoryItem _repoItem;
-    private readonly IRepositoryCategory _repoCategory;
-    private readonly IRepositoryBrand _repoBrand;
+    private readonly IRepositoryWeakDomain<Category> _repoCategory;
+    private readonly IRepositoryWeakDomain<Brand> _repoBrand;
     private readonly IRepositoryImage _repoImage;
     private readonly IRepositorySubitem _repoSubitem;
     private readonly IRepositoryComment _repoComment;
@@ -22,8 +22,8 @@ public class ServiceItem : IServiceItem
     public ServiceItem(
         IMapper mapper, 
         IRepositoryItem repoItem,
-        IRepositoryCategory repoCategory,
-        IRepositoryBrand repoBrand,
+        IRepositoryWeakDomain<Category> repoCategory,
+        IRepositoryWeakDomain<Brand> repoBrand,
         IRepositoryImage repoImage,
         IRepositorySubitem repoSubitem,
         IRepositoryComment repoComment)
@@ -72,11 +72,8 @@ public class ServiceItem : IServiceItem
 
             return itemDtos;
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            //System.Console.WriteLine("/******** "+e.StackTrace+" *******/");
-            //System.Console.WriteLine("/******** " + e.Message + " *******/");
-
             return new List<ItemDTO>();
         }
 
@@ -125,9 +122,8 @@ public class ServiceItem : IServiceItem
             return "No action!";
 
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            System.Console.WriteLine(e.Message);
             return "Database error!";
         }
 

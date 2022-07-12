@@ -59,6 +59,20 @@ public class RepositoryComment : IRepositoryComment
         }
     }
 
+    public async Task<List<Comment>> GetByClientId(string id)
+    {
+        try
+        {
+            var comments = await _dbContext.Comments.Where(x => x.ClientId == id).ToListAsync();
+
+            return comments;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
     public async void Create(Comment obj)
     {
         try

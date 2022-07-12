@@ -33,10 +33,8 @@ public class Client
     [StringLength(80)]
     public string ImagePath { get; set; } = string.Empty;
 
-    [Required]
     public DateTime DateOfBirth { get; set; }
 
-    [Required]
     [StringLength(8)]
     public string Genre { get; set; } = string.Empty;
 

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Infrastructure.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class CreatingAndInitializingDatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -20,7 +20,7 @@ namespace Infrastructure.Migrations
                     PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     ImagePath = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+                    PhoneNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -371,7 +371,7 @@ namespace Infrastructure.Migrations
                     Total = table.Column<double>(type: "float", nullable: false),
                     SubTotal = table.Column<double>(type: "float", nullable: false),
                     Descount = table.Column<double>(type: "float", nullable: false),
-                    Note = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Note = table.Column<string>(type: "nvarchar(max)", maxLength: 2147483647, nullable: true),
                     ShipmentMethod = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
                     PaymentMethod = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
                     Type = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
@@ -520,10 +520,83 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Appearances",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "light" },
+                    { 2, "dark" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Brands",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "samsung" },
+                    { 2, "panasonic" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "clothing" },
+                    { 2, "office" },
+                    { 3, "technology" },
+                    { 4, "home" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Currancies",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "usa / dollars" },
+                    { 2, "dom / pesos" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Languages",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "english" },
+                    { 2, "spanish" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "States",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "connected" },
+                    { 2, "suspended" },
+                    { 3, "offline" },
+                    { 4, "retired" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Types",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "normal" },
+                    { 2, "express" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Addresses_ClientId",
                 table: "Addresses",
                 column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Administrators_Email",
+                table: "Administrators",
+                column: "Email",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Chats_AdministratorId",

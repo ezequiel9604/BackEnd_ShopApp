@@ -4,6 +4,7 @@ namespace Domain.Entities;
 
 public class Appearance
 {
+
     [Key]
     public int Id { get; set; }
 

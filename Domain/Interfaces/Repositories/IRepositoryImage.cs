@@ -3,7 +3,7 @@ using Domain.Entities;
 
 namespace Domain.Interfaces.Repositories;
 
-public interface IRepositoryImage : IRepository<Image>
+public interface IRepositoryImage : IRepositoryStrongDomain<Image>
 {
     Task<Image> GetById(int id);
 

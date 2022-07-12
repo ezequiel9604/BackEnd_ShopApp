@@ -1,4 +1,5 @@
 ﻿
+//using System.Data.Entity;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,62 @@ public class DatabaseContext : DbContext
         builder.Entity<Client>()
             .HasIndex(x => x.Email)
             .IsUnique();
+
+        builder.Entity<Administrator>()
+            .Property(x => x.PhoneNumber)
+            .IsRequired(false);
+
+        builder.Entity<Administrator>()
+            .HasIndex(x => x.Email)
+            .IsUnique();
+
+        builder.Entity<Order>()
+            .Property(x => x.Note)
+            .IsRequired(false);
+
+        builder.Entity<Appearance>()
+            .HasData(
+                new Appearance() { Id = 1, Name = "light" },
+                new Appearance() { Id = 2, Name = "dark" }
+            );
+
+        builder.Entity<Currancy>()
+            .HasData(
+                new Currancy() { Id= 1, Name = "usa / dollars" },
+                new Currancy() { Id= 2, Name = "dom / pesos" }
+            );
+
+        builder.Entity<Language>()
+            .HasData(
+                new Language() { Id = 1, Name = "english" },
+                new Language() { Id = 2, Name = "spanish" }
+            );
+
+        builder.Entity<Brand>()
+            .HasData(
+                new Brand() { Id = 1, Name = "samsung" },
+                new Brand() { Id = 2, Name = "panasonic" }
+            );
+        builder.Entity<ClientType>()
+            .HasData(
+                new ClientType() { Id = 1,  Name = "normal" },
+                new ClientType() { Id = 2, Name = "express" }
+            );
+        builder.Entity<State>()
+            .HasData(
+                new State() { Id = 1, Name = "connected" },
+                new State() { Id = 2, Name = "suspended" },
+                new State() { Id = 3, Name = "offline" },
+                new State() { Id = 4, Name = "retired" }
+            );
+        builder.Entity<Category>()
+            .HasData(
+                new Category() { Id = 1, Name = "clothing" },
+                new Category() { Id = 2, Name = "office" },
+                new Category() { Id = 3, Name = "technology" },
+                new Category() { Id = 4, Name = "home" }
+            );
+
     }
 
     public DbSet<Administrator>? Administrators { get; set; }

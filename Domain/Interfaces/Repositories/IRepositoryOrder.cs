@@ -3,7 +3,7 @@ using Domain.Entities;
 
 namespace Domain.Interfaces.Repositories;
 
-public interface IRepositoryOrder : IRepository<Order>
+public interface IRepositoryOrder : IRepositoryStrongDomain<Order>
 {
 
 }

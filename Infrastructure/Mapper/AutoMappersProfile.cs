@@ -46,6 +46,7 @@ public class AutoMappersProfile : Profile
 
     private void ClientConfiguration()
     {
+
         // createMpa<destination, source>
         CreateMap<ClientDTO, Client>().ReverseMap()
             .ForMember(dest => dest.Appearance, opt => opt.MapFrom(src => src.Appearance.Name))
@@ -64,7 +65,8 @@ public class AutoMappersProfile : Profile
             .ForMember(dest => dest.Currancy, opt => opt.Ignore())
             .ForMember(dest => dest.Type, opt => opt.Ignore())
             .ForMember(dest => dest.State, opt => opt.Ignore())
-            .ForMember(dest => dest.Language, opt => opt.Ignore());
+            .ForMember(dest => dest.Language, opt => opt.Ignore())
+            .ForMember(dest => dest.Appearance, opt => opt.Ignore());
 
         // createMpa<destination, source>
         CreateMap<AddressDTO, Address>().ReverseMap();
